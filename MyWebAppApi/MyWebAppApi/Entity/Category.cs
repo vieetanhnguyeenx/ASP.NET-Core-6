@@ -12,6 +12,7 @@ namespace MyWebAppApi.Entity
         [Required]
         [MaxLength(50)]
         public string CategoryName { get; set; }
-        public ICollection<Product> Products { get; }
+
+        public virtual ICollection<Product> Products { get; }
     }
 }
