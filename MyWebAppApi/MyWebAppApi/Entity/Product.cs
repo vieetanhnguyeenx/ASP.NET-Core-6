@@ -25,5 +25,10 @@ namespace MyWebAppApi.Entity
         [DefaultValue(0)]
         public double Discount { get; set; } = 0;
 
+        public long? CategoryId { get; set; }
+
+        [ForeignKey("CategoryId")]
+        public Category Category { get; set; }
+
     }
 }

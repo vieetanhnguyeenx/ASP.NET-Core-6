@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyWebAppApi.Context;
 
@@ -11,9 +12,10 @@ using MyWebAppApi.Context;
 namespace MyWebAppApi.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240109071236_AddTblCategories")]
+    partial class AddTblCategories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,12 +32,17 @@ namespace MyWebAppApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
+                    b.Property<long?>("CategoryId")
+                        .HasColumnType("BigInt");
+
                     b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Categories");
                 });
@@ -74,10 +81,17 @@ namespace MyWebAppApi.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("MyWebAppApi.Entity.Category", b =>
+                {
+                    b.HasOne("MyWebAppApi.Entity.Category", null)
+                        .WithMany("Categories")
+                        .HasForeignKey("CategoryId");
+                });
+
             modelBuilder.Entity("MyWebAppApi.Entity.Product", b =>
                 {
                     b.HasOne("MyWebAppApi.Entity.Category", "Category")
-                        .WithMany("Products")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -87,7 +101,7 @@ namespace MyWebAppApi.Migrations
 
             modelBuilder.Entity("MyWebAppApi.Entity.Category", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Categories");
                 });
 #pragma warning restore 612, 618
         }
