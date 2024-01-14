@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using MyWebAppApi.Context;
-using MyWebAppApi.Entity;
 
 namespace MyWebAppApi.Controllers
 {
@@ -21,6 +14,9 @@ namespace MyWebAppApi.Controllers
             _context = context;
         }
 
+
+
+        /*
         // GET: api/Products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
@@ -120,5 +116,6 @@ namespace MyWebAppApi.Controllers
         {
             return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+        */
     }
 }

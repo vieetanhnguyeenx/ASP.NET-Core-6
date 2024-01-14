@@ -2,7 +2,7 @@
 
 namespace MyWebAppApi.Dtos.Category
 {
-    public class CategoryCreateDTORequest
+    public class CategoryDTORequest
     {
         [Required]
         [MaxLength(50)]

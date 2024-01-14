@@ -1,6 +1,6 @@
 ﻿namespace MyWebAppApi.Dtos.Category
 {
-    public class CategoryCreateDTOResponse
+    public class CategoryDTOResponse
     {
         public long Id { get; set; }
         public string CategoryName { get; set; }

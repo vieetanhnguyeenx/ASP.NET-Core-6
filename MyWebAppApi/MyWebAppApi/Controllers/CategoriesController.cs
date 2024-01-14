@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyWebAppApi.Context;
 using MyWebAppApi.Dtos.Category;
 using MyWebAppApi.Entity;
-using System.ComponentModel.DataAnnotations;
 
 namespace MyWebAppApi.Controllers
 {
@@ -12,12 +12,15 @@ namespace MyWebAppApi.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly MyDbContext _context;
+        private IMapper mapper;
 
-        public CategoriesController(MyDbContext context)
+        public CategoriesController(MyDbContext context, IMapper mapper)
         {
             _context = context;
+            this.mapper = mapper;
         }
 
+        /*
         // GET: api/Categories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
@@ -92,7 +95,7 @@ namespace MyWebAppApi.Controllers
 
             return CreatedAtAction("GetCategory", new { id = category.Id }, category);
         }
-        */
+        
         [HttpPost]
         public async Task<ActionResult<CategoryCreateDTOResponse>> PostCategory([Required] CategoryCreateDTORequest category)
         {
@@ -137,10 +140,67 @@ namespace MyWebAppApi.Controllers
 
             return NoContent();
         }
+        */
 
-        private bool CategoryExists(long id)
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategory()
         {
-            return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+            List<Category> categories = await _context.Categories.ToListAsync();
+            return Ok(mapper.Map<List<Category>, List<CategoryDTOResponse>>(categories));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCategoryById(int id)
+        {
+            var category = _context.Categories.SingleOrDefault(c => c.Id == id);
+            if (category == null)
+                return NotFound();
+
+            return Ok(mapper.Map<Category, CategoryDTOResponse>(category));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCategory(CategoryDTORequest model)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+
+            Category category = mapper.Map<CategoryDTORequest, Category>(model);
+            _context.Categories.AddAsync(category);
+            await _context.SaveChangesAsync();
+            return Ok(mapper.Map<Category, CategoryDTOResponse>(category));
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory(int id, CategoryDTORequest model)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+
+            Category category = _context.Categories.SingleOrDefault(c => c.Id == id);
+            if (category != null)
+            {
+                category = mapper.Map<CategoryDTORequest, Category>(model);
+
+                _context.Update(category);
+                await _context.SaveChangesAsync();
+                return Ok(mapper.Map<Category, CategoryDTOResponse>(category));
+
+            }
+            return NotFound();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            Category category = _context.Categories.SingleOrDefault(c => c.Id == id);
+            if (category != null)
+            {
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+                return Ok(mapper.Map<Category, CategoryDTOResponse>(category));
+
+            }
+            return NotFound();
         }
     }
 }
