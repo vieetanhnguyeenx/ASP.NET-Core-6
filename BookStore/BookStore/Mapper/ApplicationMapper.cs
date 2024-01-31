@@ -8,7 +8,8 @@ namespace BookStore.Mapper
     {
         public ApplicationMapper()
         {
-            CreateMap<Book, BookDTORequest>();
+            CreateMap<BookDTORequest, Book>();
+            CreateMap<Book, BookDTOResponse>();
         }
     }
 }
