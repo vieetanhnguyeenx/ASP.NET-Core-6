@@ -1,9 +1,10 @@
 ﻿using BookStore.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.Context
 {
-    public class BookStoreContext : DbContext
+    public class BookStoreContext : IdentityDbContext<ApplicationUser>
     {
         public BookStoreContext(DbContextOptions<BookStoreContext> options) : base(options)
         {
@@ -16,6 +17,7 @@ namespace BookStore.Context
             modelBuilder.Entity<Book>()
                 .Property(b => b.IsActive)
                 .HasDefaultValue(true);
+            base.OnModelCreating(modelBuilder);
         }
 
         public override int SaveChanges()

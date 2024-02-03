@@ -1,5 +1,6 @@
 ﻿using BookStore.Context;
 using BookStore.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace BookStore.Controllers
 
         // GET: api/Books
         [HttpGet]
+        [Authorize(Roles = Helper.AppRole.Customer)]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
             if (_context.Books == null)
