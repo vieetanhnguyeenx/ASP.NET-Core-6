@@ -1,6 +1,12 @@
-﻿namespace AuthDemo.Api.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AuthDemo.Api.Models
 {
-    public class UserDTO
+    public class UserDTORequest
     {
+        [Required]
+        public string UserName { get; set; } = string.Empty;
+        [Required]
+        public string Password { get; set; } = string.Empty;
     }
 }
