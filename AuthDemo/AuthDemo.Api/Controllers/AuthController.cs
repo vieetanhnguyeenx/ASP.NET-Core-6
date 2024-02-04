@@ -1,6 +1,9 @@
 ﻿using AuthDemo.Api.Entity;
 using AuthDemo.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -11,6 +14,13 @@ namespace AuthDemo.Api.Controllers
     public class AuthController : ControllerBase
     {
         public static User user = new User();
+        private readonly IConfiguration configuration;
+
+        public AuthController(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserDTORequest request)
         {
@@ -28,10 +38,12 @@ namespace AuthDemo.Api.Controllers
         {
             if (user.Username != request.UserName)
             {
-                return BadRequest("User not foun");
+                return BadRequest("User not found");
             }
-
-            return Ok("Token");
+            if (!VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
+                return BadRequest("Password incorrect");
+            string token = CreateToken(user);
+            return Ok(token);
         }
 
         private void CreatePasswordHash(string password,
@@ -44,5 +56,39 @@ namespace AuthDemo.Api.Controllers
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
         }
+
+        private bool VerifyPassword(string pasword, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(pasword));
+                return computedHash.SequenceEqual(passwordHash);
+            }
+        }
+
+        private string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username)
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                configuration.GetSection("AppSettings:SecretKey").Value));
+
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: cred);
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
+        }
+        /*
+         * "AppSettings": {
+    "SecretKey":  "My top scretkey doi den qua"
+  }
+         */
     }
 }
+
