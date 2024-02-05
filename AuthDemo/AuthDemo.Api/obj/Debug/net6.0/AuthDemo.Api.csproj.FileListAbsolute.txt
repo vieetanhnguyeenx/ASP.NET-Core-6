@@ -66,3 +66,5 @@ D:\FPT_Study\CSharp\ASPNetAPI\HenLTH\ASP.NET-Core-6\AuthDemo\AuthDemo.Api\obj\De
 D:\FPT_Study\CSharp\ASPNetAPI\HenLTH\ASP.NET-Core-6\AuthDemo\AuthDemo.Api\obj\Debug\net6.0\AuthDemo.Api.pdb
 D:\FPT_Study\CSharp\ASPNetAPI\HenLTH\ASP.NET-Core-6\AuthDemo\AuthDemo.Api\obj\Debug\net6.0\AuthDemo.Api.genruntimeconfig.cache
 D:\FPT_Study\CSharp\ASPNetAPI\HenLTH\ASP.NET-Core-6\AuthDemo\AuthDemo.Api\obj\Debug\net6.0\ref\AuthDemo.Api.dll
+D:\FPT_Study\CSharp\ASPNetAPI\HenLTH\ASP.NET-Core-6\AuthDemo\AuthDemo.Api\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\FPT_Study\CSharp\ASPNetAPI\HenLTH\ASP.NET-Core-6\AuthDemo\AuthDemo.Api\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll
