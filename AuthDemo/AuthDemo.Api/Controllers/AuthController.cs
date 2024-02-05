@@ -1,5 +1,6 @@
 ﻿using AuthDemo.Api.Entity;
 using AuthDemo.Api.Models;
+using AuthDemo.Api.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,20 +17,26 @@ namespace AuthDemo.Api.Controllers
     {
         public static User user = new User();
         private readonly IConfiguration configuration;
+        private readonly IUserService userService;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration, IUserService userService)
         {
             this.configuration = configuration;
+            this.userService = userService;
         }
 
         [HttpGet]
         [Authorize]
         public ActionResult<string> GetMe()
         {
+            var userName = userService.GetUserName();
+            return Ok(userName);
+            /*
             var username = User?.Identity?.Name;
             var username2 = User?.FindFirstValue(ClaimTypes.Name);
             var role = User.FindFirstValue(ClaimTypes.Role);
             return Ok(new { username, username2, role });
+            */
         }
 
         [HttpPost("register")]
