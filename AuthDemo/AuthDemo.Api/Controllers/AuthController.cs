@@ -48,6 +48,7 @@ namespace AuthDemo.Api.Controllers
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
+
             return Ok(user);
         }
 
@@ -61,8 +62,56 @@ namespace AuthDemo.Api.Controllers
             if (!VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
                 return BadRequest("Password incorrect");
             string token = CreateToken(user);
+
+            var refreshToken = GenerateRefreshToken();
+            SetRefreshToken(refreshToken);
+
             return Ok(token);
         }
+
+        private RefreshToken GenerateRefreshToken()
+        {
+            var refreshToken = new RefreshToken
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expires = DateTime.Now.AddDays(7),
+                Created = DateTime.Now
+            };
+            return refreshToken;
+        }
+
+        private void SetRefreshToken(RefreshToken newRefreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = newRefreshToken.Expires
+
+            };
+            Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
+
+            user.RefreshToken = newRefreshToken.Token;
+            user.TokenCreated = newRefreshToken.Created;
+            user.TokenExpires = newRefreshToken.Expires;
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (!user.RefreshToken.Equals(refreshToken))
+                return Unauthorized("Invalid Refresh Token");
+
+            else if (user.TokenExpires < DateTime.Now)
+                return Unauthorized("Token exprise");
+
+            string token = CreateToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+            SetRefreshToken(newRefreshToken);
+
+            return Ok(token);
+        }
+
 
         private void CreatePasswordHash(string password,
             out byte[] passwordHash,
@@ -97,7 +146,7 @@ namespace AuthDemo.Api.Controllers
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddSeconds(30),
                 signingCredentials: cred);
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
